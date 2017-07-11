@@ -12,12 +12,17 @@ function checkData(){
             roles.forEach(function (item) {
                 setRole(item.name)
                     .then(function (role) {
-                    getSchools(role.key).then();
-                    if (role.role === 'ADMIN' || role.role === 'MANAGER' || role.role === 'TRAINER'){
-                        getStudentList(role.key);
-                        getHouseList(role.key);
-                        getFormList(role.key);
-                    }
+                    getSchools(role.key).then(function (schools) {
+                        schools.forEach(function (school) {
+                            if (role.role === 'ADMIN' || role.role === 'MANAGER' || role.role === 'TRAINER'){
+                                getStudentList(role.key, school.id);
+                                getHouseList(role.key, school.id);
+                                getFormList(role.key, school.id);
+                            }
+                        })
+                    });
+
+
                 })
             });
         });
@@ -88,11 +93,11 @@ function getSchools(sessionKey) {
 
 
 
-function getStudentList(sessionKey) {
+function getStudentList(sessionKey, schoolId) {
     return $.ajax({
         type: "GET",
         headers: {"usid": sessionKey},
-        url: "http://api.stage1.squadintouch.com/i/schools/57b6c9a6dd69264b6c5ba82f/students?filter=%7B%22limit%22%3A20%2C%22skip%22%3A20%7D&{}",
+        url: "http://api.stage1.squadintouch.com/i/schools/" + schoolId + "/students?filter=%7B%22limit%22%3A20%2C%22skip%22%3A20%7D&{}",
         statusCode: {
             200: function (response) {
                 console.log(response);
@@ -102,11 +107,11 @@ function getStudentList(sessionKey) {
     });
 }
 
-function getHouseList(sessionKey) {
+function getHouseList(sessionKey, schoolId) {
     return $.ajax({
         type: "GET",
         headers: {"usid": sessionKey},
-        url: "http://api.stage1.squadintouch.com/i/schools/57b6c9a6dd69264b6c5ba82d/houses?filter=%7B%22limit%22%3A20%7D&{}",
+        url: "http://api.stage1.squadintouch.com/i/schools/" + schoolId + "/houses?filter=%7B%22limit%22%3A20%7D&{}",
         statusCode: {
             200: function (response) {
                 console.log(response);
@@ -116,11 +121,11 @@ function getHouseList(sessionKey) {
     });
 }
 
-function getFormList(sessionKey) {
+function getFormList(sessionKey, schoolId) {
     return $.ajax({
         type: "GET",
         headers: {"usid": sessionKey},
-        url: "http://api.stage1.squadintouch.com/i/schools/57b6c9a6dd69264b6c5ba82d/forms?filter=%7B%22limit%22%3A30%7D&{}",
+        url: "http://api.stage1.squadintouch.com/i/schools/" + schoolId + "/forms?filter=%7B%22limit%22%3A30%7D&{}",
         statusCode: {
             200: function (response) {
                 console.log(response);
